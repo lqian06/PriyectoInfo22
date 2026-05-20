@@ -14,7 +14,7 @@ namespace Interfaz
     public partial class CambiarVelocidadPregunta : Form 
     {
         FlightPlanList planes = new FlightPlanList();
-        int velmin = 40;
+        int velmin = 1;
         int distanciaSegura;
 
 

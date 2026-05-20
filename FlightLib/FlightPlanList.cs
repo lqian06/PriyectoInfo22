@@ -125,20 +125,10 @@ namespace FlightLib
                 // Primero intenta bajando
                 while (vector[i].GetVelocidad() > velmin && HabraConflictoLista(distanciaSegura))
                 {
-                    vector[i].SetVelocidad(vector[i].GetVelocidad() - 5);
-                }
+                    vector[i].SetVelocidad(vector[i].GetVelocidad() - 1);
+                }                
 
-                // Si no se resolvió bajando, restaura ese vuelo y prueba subiendo
-                if (HabraConflictoLista(distanciaSegura))
-                {
-                    vector[i].SetVelocidad(velocidadesOriginales[i]);
-                    while (vector[i].GetVelocidad() < 1000 && HabraConflictoLista(distanciaSegura))
-                    {
-                        vector[i].SetVelocidad(vector[i].GetVelocidad() + 5);
-                    }
-                }
-
-                // Si tampoco se resolvió subiendo, restaura y pasa al siguiente
+                // Si no se resolvió, restaura y pasa al siguiente
                 if (HabraConflictoLista(distanciaSegura))
                 {
                     vector[i].SetVelocidad(velocidadesOriginales[i]);
@@ -206,6 +196,7 @@ namespace FlightLib
             }
             write.Close();
         }
+
 
     }
 }
