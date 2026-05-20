@@ -1,0 +1,162 @@
+﻿using FlightLib;
+using Interfaz;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Interfaz
+{
+    public partial class Importar__exportar_fichero : Form //Form para importar y exportar los datos de los planes de vuelo
+    {
+        public Importar__exportar_fichero() //Iniciar el formulario
+        {
+            InitializeComponent();
+        }
+
+
+        //GetLista de FormLinea y así importamos los datos de los planes de vuelo
+        FlightPlanList listaImportada = null;
+        public FlightPlanList GetLista()
+        {
+            return listaImportada;
+        }
+
+
+        //Comprueba que se han cargado los datos
+        private void bttnImportarFlightPlan_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                FlightPlanList nueva = new FlightPlanList();
+                nueva = nueva.CargarDesdeArchivo(ImportarFlightPlanTextBox.Text);
+
+                if (nueva!=null)
+                {
+                    listaImportada = nueva;
+                    MessageBox.Show("Archivo cargado correctamente");
+                }
+                else
+                {
+                    MessageBox.Show("No se ha podido cargar el archivo");
+
+                }
+                Close();
+            }
+            catch (FileNotFoundException)
+            {
+                MessageBox.Show("No hay ningún archivo encontrado");
+            }
+            catch (FormatException)
+            {
+                MessageBox.Show("El formato del archivo no es correcto");
+            }
+
+        }
+
+        //Cogemos los datos del menú de los FlightPlans
+        FlightPlanList lista;
+
+        public void SetLista(FlightPlanList lista) //Método para establecer la lista de planes de vuelo
+        {
+            this.lista = lista;
+        }
+      
+        private void bttnExportarFlightPlan_Click_1(object sender, EventArgs e) // Botón para exportar los datos de los planes de vuelo
+        {
+            try
+            {
+                FlightPlan v1 = lista.GetFlightPlan(0);
+                FlightPlan v2 = lista.GetFlightPlan(1);
+
+                if (v1 == null || v2 == null)
+                {
+                    MessageBox.Show("Parámetros no definidos, seleccione en el menú para rellenar los campos");
+                }
+                else
+                {
+                    lista.GuardarEnArchivo(ExportarFlightPlanTextBox.Text);
+                    MessageBox.Show("Archivo guardado correctamente.");
+                }
+            }
+            catch (FormatException)
+            {
+                MessageBox.Show("El formato del archivo no es correcto");
+            }
+        }
+
+
+
+        //Abre tus archivos para importar un plan de vuelo
+        private void BttnImportarOrdenador_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dialogo = new OpenFileDialog();
+            dialogo.Filter = "Archivos de texto (*.txt)|*.txt";
+            dialogo.Title = "Importar planes de vuelo";
+
+            if (dialogo.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    FlightPlanList nueva = new FlightPlanList();
+                    nueva = nueva.CargarDesdeArchivo(dialogo.FileName);
+                    if (nueva != null)
+                    {
+                        listaImportada = nueva;
+                        MessageBox.Show("Archivo cargado correctamente");
+                        Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("No se ha podido cargar el archivo");
+                    }
+                }
+                catch (FileNotFoundException)
+                {
+                    MessageBox.Show("No hay ningún archivo encontrado");
+                }
+                catch (FormatException)
+                {
+                    MessageBox.Show("El formato del archivo no es correcto");
+                }
+            }
+        }
+
+
+        //Abre tus archivos para exportar un plan de vuelo
+        private void BttnExportarOrdenador_Click(object sender, EventArgs e)
+        {
+
+            if (lista.GetFlightPlan(0) == null || lista.GetFlightPlan(1) == null)
+            {
+                MessageBox.Show("Parámetros no definidos, seleccione en el menú para rellenar los campos");
+                return;
+            }
+
+            SaveFileDialog dialogo = new SaveFileDialog();
+            dialogo.Filter = "Archivos de texto (*.txt)|*.txt";
+            dialogo.Title = "Exportar planes de vuelo";
+            dialogo.FileName = "flightplans";
+
+            if (dialogo.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    lista.GuardarEnArchivo(dialogo.FileName);
+                    MessageBox.Show("Archivo guardado correctamente.");
+                }
+                catch (FormatException)
+                {
+                    MessageBox.Show("El formato del archivo no es correcto");
+                }
+            }
+        }
+    }
+}
+
