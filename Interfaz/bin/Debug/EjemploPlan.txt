@@ -1,8 +1,9 @@
-Avion1 American_Airlines 400 50 400 500 50
-Avion2 Singapore_Airlines 50 500 750 50 50
-Avion3 Emirates 50 50 750 500 50
-Avion4 iberiA 750 275 50 275 50
-Avion5 Vueling 600 50 600 500 50
-Avion6 british_airways 200 50 200 500 50
-Avion7 Ryanair 50 137 750 137 50
-Avion8 United_Airlines 50 413 750 413 50
+10 20
+Avion1 American_Airlines 400 50 400 500 100
+Avion2 Singapore_Airlines 50 500 750 50 100
+Avion3 Emirates 50 50 750 500 100
+Avion4 iberiA 750 275 50 275 100
+Avion5 Vueling 600 50 600 500 100
+Avion6 british_airways 200 50 200 500 100
+Avion7 Ryanair 50 137 750 137 100
+Avion8 United_Airlines 50 413 750 413 100

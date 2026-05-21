@@ -147,9 +147,10 @@ namespace FlightLib
             Console.WriteLine("******************************");
         }
 
-        public void Restart() // reinicia el vuelo a su posición inicial
+        public void Restart() // reinicia el vuelo a su posición inicial y vacía el stack
         {
             this.SetCurrentPosition(initialPosition.GetX(), initialPosition.GetY());
+            this.historialPosiciones.Clear();
         }
 
         public double Distancia(FlightPlan b) // devuelve la distancia entre vuelos
@@ -208,6 +209,8 @@ namespace FlightLib
                 this.currentPosition = historialPosiciones.Pop(); //recuperar la última posición del historial y establecerla como la posición actual
             }
         }
+
+
         public string Escribirlinea() // escribe en una sola línea los datos del plan de vuelo, separados por espacios
         {
             return id + " " + company + " " + currentPosition.GetX() + " " + currentPosition.GetY() + " " + finalPosition.GetX() + " " + finalPosition.GetY() + " " + velocidad;

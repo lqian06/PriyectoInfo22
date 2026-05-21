@@ -1,5 +1,6 @@
 ﻿using FlightLib;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -19,6 +20,48 @@ namespace Interfaz
 
         private void IniciarSimulacion()
         {
+            // 1. Verificamos si habrá algún conflicto antes de encender el reloj
+            if (planes.HabraConflictoLista(distanciaSeguridad))
+            {
+                DialogResult respuesta = MessageBox.Show(
+                    "¡Se ha detectado un conflicto potencial entre los vuelos de la lista!\n" +
+                    "¿Desea que el sistema intente ajustar las velocidades automáticamente?",
+                    "Conflicto Detectado",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning
+                );
+
+                if (respuesta == DialogResult.Yes)
+                {
+                    // Intentamos resolverlo estableciendo una velocidad mínima permitida de 100 km/h
+                    int velocidadMinimaPermitida = 10;
+                    bool resuelto = planes.ResolverConflicto(distanciaSeguridad, velocidadMinimaPermitida);
+
+                    if (resuelto)
+                    {
+                        MessageBox.Show(
+                            "El conflicto ha sido resuelto con éxito recalculando las velocidades corporativas.",
+                            "Solución Aplicada",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information
+                        );
+                        // Refrescamos los componentes visuales para que muestren los nuevos datos de velocidad
+                        ActualizarGridExterno();
+                        panel1.Invalidate();
+                    }
+                    else
+                    {
+                        MessageBox.Show(
+                            "No ha sido posible resolver el conflicto de forma segura reduciendo las velocidades hasta los límites mínimos permitidos. Procediendo con precaución.",
+                            "Solución Fallida",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error
+                        );
+                    }
+                }
+            }
+
+            // 2. Iniciamos el temporizador de la simulación de forma habitual
             timer1.Interval = 1000;
             timer1.Start();
 
@@ -35,10 +78,8 @@ namespace Interfaz
         // Cargar el menú
         private void Menu_Load(object sender, EventArgs e)
         {
-            // Ocultamos el mapa de simulación
             panel1.Visible = false;
 
-            // Ocultamos todos los controles inferiores de la simulación
             BtnInfoVuelos.Visible = false;
             RestartSimBtn.Visible = false;
             BttnRetroceder.Visible = false;
@@ -47,7 +88,6 @@ namespace Interfaz
             BttnAñadirUnCiclo.Visible = false;
             CambiarVelBtn.Visible = false;
 
-            // Ocultamos las etiquetas de estado
             ChocaLabel.Visible = false;
             seguridad.Visible = false;
         }
@@ -56,7 +96,6 @@ namespace Interfaz
         // BOTONES DEL MENÚ
         // ==========================================
 
-        // Distancias de seguridad y tiempo de ciclo
         private void BttnDistanciaSeguridadCiclo_Click(object sender, EventArgs e)
         {
             DistanciaSeguridadCiclo form3 = new DistanciaSeguridadCiclo();
@@ -68,13 +107,10 @@ namespace Interfaz
             if (distanciaSeguridad > 0)
             {
                 MessageBox.Show("Configuración guardada en el Menú.");
-
-                // Redibujar el panel para que muestre los círculos de seguridad al instante
                 panel1.Invalidate();
             }
         }
 
-        // Añadir datos de vuelo de los FlightPlans
         private void BttnAñadirFlightPlan_Click(object sender, EventArgs e)
         {
             AñadirFlightPlan Form2 = new AñadirFlightPlan();
@@ -82,30 +118,37 @@ namespace Interfaz
             if (Form2.HayLista() == 0)
             {
                 this.planes = Form2.GetLista();
+                // Reiniciamos los planes cargados por seguridad para vaciar sus pilas internas
+                planes.ReiniciarTodos();
                 MessageBox.Show("Planes de vuelo cargados correctamente");
 
-                // Forzar el repintado inmediato del mapa con los nuevos aviones añadidos
                 panel1.Invalidate();
-
-                // Si la tabla de datos externa ya está abierta, la actualizamos también con los nuevos aviones
                 ActualizarGridExterno();
             }
         }
 
-        // Botón para importar o exportar un fichero con los datos de los vuelos
         private void ImportarFlightPlan_Click(object sender, EventArgs e)
         {
             Importar__exportar_fichero form4 = new Importar__exportar_fichero();
-            form4.SetLista(planes);
+
+            form4.SetLista(planes, this.tiempoCiclo, this.distanciaSeguridad);
             form4.ShowDialog();
+
             planes = form4.GetLista();
 
-            // Al cargar un archivo, mostramos los aviones cargados inmediatamente
+            if (planes != null)
+            {
+                this.tiempoCiclo = planes.TiempoCiclo;
+                this.distanciaSeguridad = planes.DistanciaSeguridad;
+                planes.ReiniciarTodos(); // Limpiamos las pilas internas al importar un escenario nuevo
+
+                MessageBox.Show($"Datos cargados. Velocidad de simulación: {tiempoCiclo}s, Distancia de seguridad: {distanciaSeguridad}m");
+            }
+
             panel1.Invalidate();
             ActualizarGridExterno();
         }
 
-        // Botón para mostrar si habrá un conflicto entre los vuelos
         private void BtnConflicto_Click(object sender, EventArgs e)
         {
             if (planes.GetNum() >= 2)
@@ -126,25 +169,18 @@ namespace Interfaz
         }
 
         // ==========================================
-        // SIMULADOR
+        // SIMULADOR (Pintado y Clics)
         // ==========================================
 
-        // Función para dibujar la simulacion
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
-            //La idea para dibujar a escala es de un trabajo de 2022
-
-            // DIMENSIONES MÁXIMAS LÓGICAS FIJADAS A 1000 x 500
-            float maxLogicoX = 1000f;
+            float maxLogicoX = 1000f; 
             float maxLogicoY = 500f;
-
-            // Dimensiones reales en píxeles de tu panel en este instante
             float anchoPanel = panel1.Width;
             float altoPanel = panel1.Height;
 
-            // Factores de escala (Píxeles reales por cada unidad del sistema lógico)
             float escalaX = anchoPanel / maxLogicoX;
             float escalaY = altoPanel / maxLogicoY;
 
@@ -152,31 +188,24 @@ namespace Interfaz
             {
                 FlightPlan vueloI = planes.GetFlightPlan(i);
 
-                // --- COORDENADAS ORIGINALES ---
                 Position inicio = vueloI.GetInitialPosition();
                 Position fin = vueloI.GetFinalPosition();
                 Position actual = vueloI.GetCurrentPosition();
 
-                // --- COORDENADAS ESCALADAS AL PANEL (PÍXELES REALES) ---
                 float xIni = (float)inicio.GetX() * escalaX;
                 float yIni = (float)inicio.GetY() * escalaY;
-
                 float xFin = (float)fin.GetX() * escalaX;
                 float yFin = (float)fin.GetY() * escalaY;
-
                 float xAct = (float)actual.GetX() * escalaX;
                 float yAct = (float)actual.GetY() * escalaY;
 
-                // Escalamos la distancia de seguridad utilizando el promedio de escalas para que no se deforme
                 float distanciaSeguridadEscalada = distanciaSeguridad * ((escalaX + escalaY) / 2);
 
-                // 1. Dibujar Línea de trayectoria adaptada
                 using (Pen lapiz = new Pen(Color.Black, 2))
                 {
                     e.Graphics.DrawLine(lapiz, xIni, yIni, xFin, yFin);
                 }
 
-                // 2. Lógica de conflicto
                 bool enConflicto = false;
                 if (distanciaSeguridad > 0)
                 {
@@ -193,7 +222,6 @@ namespace Interfaz
                     }
                 }
 
-                // 3. Dibujar Círculo de seguridad adaptado
                 if (distanciaSeguridad > 0)
                 {
                     float xCirculo = xAct - (distanciaSeguridadEscalada / 2);
@@ -215,7 +243,6 @@ namespace Interfaz
                     }
                 }
 
-                // 4. Dibujar el icono del Avión centrado en la posición escalada
                 string iconoAvion = "\u2708";
                 using (Font fuenteAvion = new Font("Arial", 14, FontStyle.Bold))
                 {
@@ -224,52 +251,10 @@ namespace Interfaz
             }
         }
 
-        // Función para mover los vuelos en cada Tick del reloj
-        private void timer1_Tick(object sender, EventArgs e)
-        {
-            segundos++;
-            if (planes.HabraConflictoLista(distanciaSeguridad))
-            {
-                ChocaLabel.Text = "Choca";
-            }
-            else
-            {
-                ChocaLabel.Text = "No choca";
-            }
-
-            bool algunoSinLlegar = false;
-            int i = 0;
-            while (i < planes.GetNum() && !algunoSinLlegar)
-            {
-                if (!planes.GetFlightPlan(i).HasArrived())
-                {
-                    algunoSinLlegar = true;
-                }
-                i++;
-            }
-
-            if (algunoSinLlegar)
-            {
-                for (int j = 0; j < planes.GetNum(); j++)
-                {
-                    if (!planes.GetFlightPlan(j).HasArrived())
-                        planes.GetFlightPlan(j).Mover(tiempoCiclo);
-                }
-                panel1.Invalidate();
-                ActualizarGridExterno();
-            }
-            else
-            {
-                timer1.Stop();
-            }
-        }
-
-        // Mostrar detalles del vuelo haciendo clic directamente sobre el mapa (Adaptado al espacio 1000x500)
         private void panel1_MouseClick(object sender, MouseEventArgs e)
         {
             float maxLogicoX = 1000f;
             float maxLogicoY = 500f;
-
             float escalaX = panel1.Width / maxLogicoX;
             float escalaY = panel1.Height / maxLogicoY;
 
@@ -314,6 +299,44 @@ namespace Interfaz
             BtnIniciar.Visible = true;
         }
 
+        // ÚNICO MÉTODO TICK (CORREGIDO Y SIN DUPLICAR)
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            segundos++;
+            if (planes.HabraConflictoLista(distanciaSeguridad))
+                ChocaLabel.Text = "Choca";
+            else
+                ChocaLabel.Text = "No choca";
+
+            bool algunoSinLlegar = false;
+            int i = 0;
+            while (i < planes.GetNum() && !algunoSinLlegar)
+            {
+                if (!planes.GetFlightPlan(i).HasArrived())
+                    algunoSinLlegar = true;
+                i++;
+            }
+
+            if (algunoSinLlegar)
+            {
+                for (int j = 0; j < planes.GetNum(); j++)
+                {
+                    if (!planes.GetFlightPlan(j).HasArrived())
+                    {
+                        // Mover() ya se encarga de guardar automáticamente el historial con Push()
+                        planes.GetFlightPlan(j).Mover(tiempoCiclo);
+                    }
+                }
+                panel1.Invalidate();
+                ActualizarGridExterno();
+            }
+            else
+            {
+                timer1.Stop();
+            }
+        }
+
+        // Botón Añadir un ciclo manual
         private void BttnAñadirUnCiclo_Click(object sender, EventArgs e)
         {
             timer1.Stop();
@@ -321,34 +344,40 @@ namespace Interfaz
             {
                 planes.GetFlightPlan(i).Mover(tiempoCiclo);
             }
+            segundos++;
             panel1.Invalidate();
             ActualizarGridExterno();
         }
 
+        // Botón Retroceder (Pop)
         private void BttnRetroceder_Click(object sender, EventArgs e)
         {
             timer1.Stop();
-            for (int i = 0; i < planes.GetNum(); i++)
+
+            // Llama a Deshacer() de la clase FlightPlanList que creamos antes
+            planes.DeshacerTodos();
+
+            if (segundos > 0)
             {
-                planes.GetFlightPlan(i).Mover(-tiempoCiclo);
+                segundos--;
             }
+
             panel1.Invalidate();
             ActualizarGridExterno();
         }
 
+        // Botón Reiniciar
         private void RestartSimBtn_Click(object sender, EventArgs e)
         {
             timer1.Stop();
             segundos = 0;
 
-            for (int i = 0; i < planes.GetNum(); i++)
-            {
-                FlightPlan vuelo = planes.GetFlightPlan(i);
-                Position inicio = vuelo.GetInitialPosition();
-                vuelo.SetCurrentPosition(inicio.GetX(), inicio.GetY());
-            }
+            // Devuelve los aviones a su origen y limpia las pilas
+            planes.ReiniciarTodos();
+
             panel1.Invalidate();
             ActualizarGridExterno();
+            MessageBox.Show("Simulación reiniciada e historiales vaciados.");
         }
 
         // ==========================================
@@ -398,13 +427,9 @@ namespace Interfaz
 
                     timer1.Stop();
                     segundos = 0;
+                    planes.ReiniciarTodos(); // Limpiamos historiales si alteramos velocidades
                     MessageBox.Show("Velocidades cambiadas");
 
-                    for (int i = 0; i < planes.GetNum(); i++)
-                    {
-                        FlightPlan vuelo = planes.GetFlightPlan(i);
-                        vuelo.SetCurrentPosition(vuelo.GetInitialPosition().GetX(), vuelo.GetInitialPosition().GetY());
-                    }
                     panel1.Invalidate();
                     ActualizarGridExterno();
                 }
@@ -425,13 +450,12 @@ namespace Interfaz
 
             if (dialogo.ShowDialog() == DialogResult.OK)
             {
-                planes.GuardarEnArchivo(dialogo.FileName);
+                planes.GuardarEnArchivo(dialogo.FileName, this.tiempoCiclo, this.distanciaSeguridad);
                 MessageBox.Show("Progreso guardado correctamente.");
                 Close();
             }
         }
 
-        // Boton para iniciar/apagar la simulación
         private void BotonEncendidoApagado_Click(object sender, EventArgs e)
         {
             if (!panel1.Visible)
@@ -455,6 +479,7 @@ namespace Interfaz
             else
             {
                 timer1.Stop();
+                planes.ReiniciarTodos(); // Limpia los Stacks al apagar la pantalla de simulación
                 Menu_Load(sender, e);
                 BotonEncendidoApagado.BackColor = SystemColors.Control;
             }

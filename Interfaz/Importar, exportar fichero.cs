@@ -62,13 +62,16 @@ namespace Interfaz
 
         //Cogemos los datos del menú de los FlightPlans
         FlightPlanList lista;
-
-        public void SetLista(FlightPlanList lista) //Método para establecer la lista de planes de vuelo
+        int tiempoCiclo;
+        int distanciaSeguridad;
+        public void SetLista(FlightPlanList lista, int tiempoCiclo, int distanciaSeguridad)
         {
             this.lista = lista;
+            this.tiempoCiclo = tiempoCiclo;
+            this.distanciaSeguridad = distanciaSeguridad;
         }
-      
-        private void bttnExportarFlightPlan_Click_1(object sender, EventArgs e) // Botón para exportar los datos de los planes de vuelo
+
+        private void bttnExportarFlightPlan_Click_1(object sender, EventArgs e)
         {
             try
             {
@@ -81,7 +84,8 @@ namespace Interfaz
                 }
                 else
                 {
-                    lista.GuardarEnArchivo(ExportarFlightPlanTextBox.Text);
+                    // Pasamos las variables guardadas
+                    lista.GuardarEnArchivo(ExportarFlightPlanTextBox.Text, tiempoCiclo, distanciaSeguridad);
                     MessageBox.Show("Archivo guardado correctamente.");
                 }
             }
@@ -132,7 +136,6 @@ namespace Interfaz
         //Abre tus archivos para exportar un plan de vuelo
         private void BttnExportarOrdenador_Click(object sender, EventArgs e)
         {
-
             if (lista.GetFlightPlan(0) == null || lista.GetFlightPlan(1) == null)
             {
                 MessageBox.Show("Parámetros no definidos, seleccione en el menú para rellenar los campos");
@@ -148,7 +151,8 @@ namespace Interfaz
             {
                 try
                 {
-                    lista.GuardarEnArchivo(dialogo.FileName);
+                    // Pasamos las variables guardadas
+                    lista.GuardarEnArchivo(dialogo.FileName, tiempoCiclo, distanciaSeguridad);
                     MessageBox.Show("Archivo guardado correctamente.");
                 }
                 catch (FormatException)
