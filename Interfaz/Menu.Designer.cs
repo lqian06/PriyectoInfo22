@@ -47,6 +47,7 @@
             this.ChocaLabel = new System.Windows.Forms.Label();
             this.seguridad = new System.Windows.Forms.Label();
             this.BotonEncendidoApagado = new System.Windows.Forms.Button();
+            this.BtnRebobinar = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -106,7 +107,7 @@
             // BttnRetroceder
             // 
             this.BttnRetroceder.Font = new System.Drawing.Font("Comic Sans MS", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BttnRetroceder.Location = new System.Drawing.Point(603, 552);
+            this.BttnRetroceder.Location = new System.Drawing.Point(690, 550);
             this.BttnRetroceder.Name = "BttnRetroceder";
             this.BttnRetroceder.Size = new System.Drawing.Size(140, 70);
             this.BttnRetroceder.TabIndex = 21;
@@ -117,7 +118,7 @@
             // RestartSimBtn
             // 
             this.RestartSimBtn.Font = new System.Drawing.Font("Comic Sans MS", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.RestartSimBtn.Location = new System.Drawing.Point(457, 552);
+            this.RestartSimBtn.Location = new System.Drawing.Point(398, 551);
             this.RestartSimBtn.Name = "RestartSimBtn";
             this.RestartSimBtn.Size = new System.Drawing.Size(140, 70);
             this.RestartSimBtn.TabIndex = 19;
@@ -128,7 +129,7 @@
             // CambiarVelBtn
             // 
             this.CambiarVelBtn.Font = new System.Drawing.Font("Comic Sans MS", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.CambiarVelBtn.Location = new System.Drawing.Point(1103, 550);
+            this.CambiarVelBtn.Location = new System.Drawing.Point(1129, 550);
             this.CambiarVelBtn.Name = "CambiarVelBtn";
             this.CambiarVelBtn.Size = new System.Drawing.Size(140, 70);
             this.CambiarVelBtn.TabIndex = 18;
@@ -139,7 +140,7 @@
             // BtnInfoVuelos
             // 
             this.BtnInfoVuelos.Font = new System.Drawing.Font("Comic Sans MS", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnInfoVuelos.Location = new System.Drawing.Point(311, 552);
+            this.BtnInfoVuelos.Location = new System.Drawing.Point(252, 550);
             this.BtnInfoVuelos.Name = "BtnInfoVuelos";
             this.BtnInfoVuelos.Size = new System.Drawing.Size(140, 70);
             this.BtnInfoVuelos.TabIndex = 17;
@@ -159,7 +160,7 @@
             // BtnIniciar
             // 
             this.BtnIniciar.Font = new System.Drawing.Font("Comic Sans MS", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnIniciar.Location = new System.Drawing.Point(749, 550);
+            this.BtnIniciar.Location = new System.Drawing.Point(836, 550);
             this.BtnIniciar.Name = "BtnIniciar";
             this.BtnIniciar.Size = new System.Drawing.Size(140, 70);
             this.BtnIniciar.TabIndex = 13;
@@ -170,7 +171,7 @@
             // BttnAñadirUnCiclo
             // 
             this.BttnAñadirUnCiclo.Font = new System.Drawing.Font("Comic Sans MS", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BttnAñadirUnCiclo.Location = new System.Drawing.Point(895, 552);
+            this.BttnAñadirUnCiclo.Location = new System.Drawing.Point(982, 550);
             this.BttnAñadirUnCiclo.Name = "BttnAñadirUnCiclo";
             this.BttnAñadirUnCiclo.Size = new System.Drawing.Size(140, 70);
             this.BttnAñadirUnCiclo.TabIndex = 14;
@@ -181,7 +182,7 @@
             // btnParar
             // 
             this.btnParar.Font = new System.Drawing.Font("Comic Sans MS", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnParar.Location = new System.Drawing.Point(749, 552);
+            this.btnParar.Location = new System.Drawing.Point(836, 550);
             this.btnParar.Name = "btnParar";
             this.btnParar.Size = new System.Drawing.Size(140, 70);
             this.btnParar.TabIndex = 15;
@@ -196,7 +197,7 @@
             // ChocaLabel
             // 
             this.ChocaLabel.AutoSize = true;
-            this.ChocaLabel.Location = new System.Drawing.Point(1046, 574);
+            this.ChocaLabel.Location = new System.Drawing.Point(32, 370);
             this.ChocaLabel.Name = "ChocaLabel";
             this.ChocaLabel.Size = new System.Drawing.Size(46, 16);
             this.ChocaLabel.TabIndex = 20;
@@ -205,7 +206,7 @@
             // seguridad
             // 
             this.seguridad.AutoSize = true;
-            this.seguridad.Location = new System.Drawing.Point(1046, 590);
+            this.seguridad.Location = new System.Drawing.Point(32, 386);
             this.seguridad.Name = "seguridad";
             this.seguridad.Size = new System.Drawing.Size(51, 16);
             this.seguridad.TabIndex = 22;
@@ -214,13 +215,24 @@
             // BotonEncendidoApagado
             // 
             this.BotonEncendidoApagado.Font = new System.Drawing.Font("Comic Sans MS", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BotonEncendidoApagado.Location = new System.Drawing.Point(35, 500);
+            this.BotonEncendidoApagado.Location = new System.Drawing.Point(35, 218);
             this.BotonEncendidoApagado.Name = "BotonEncendidoApagado";
-            this.BotonEncendidoApagado.Size = new System.Drawing.Size(140, 70);
+            this.BotonEncendidoApagado.Size = new System.Drawing.Size(210, 108);
             this.BotonEncendidoApagado.TabIndex = 23;
             this.BotonEncendidoApagado.Text = "⏻";
             this.BotonEncendidoApagado.UseVisualStyleBackColor = true;
             this.BotonEncendidoApagado.Click += new System.EventHandler(this.BotonEncendidoApagado_Click);
+            // 
+            // BtnRebobinar
+            // 
+            this.BtnRebobinar.Font = new System.Drawing.Font("Comic Sans MS", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnRebobinar.Location = new System.Drawing.Point(544, 550);
+            this.BtnRebobinar.Name = "BtnRebobinar";
+            this.BtnRebobinar.Size = new System.Drawing.Size(140, 70);
+            this.BtnRebobinar.TabIndex = 24;
+            this.BtnRebobinar.Text = "◁◁";
+            this.BtnRebobinar.UseVisualStyleBackColor = true;
+            this.BtnRebobinar.Click += new System.EventHandler(this.BtnRebobinar_Click);
             // 
             // Menu
             // 
@@ -228,6 +240,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.AliceBlue;
             this.ClientSize = new System.Drawing.Size(1309, 632);
+            this.Controls.Add(this.BtnRebobinar);
             this.Controls.Add(this.BtnIniciar);
             this.Controls.Add(this.BotonEncendidoApagado);
             this.Controls.Add(this.CambiarVelBtn);
@@ -271,6 +284,7 @@
         private System.Windows.Forms.Label ChocaLabel;
         private System.Windows.Forms.Label seguridad;
         private System.Windows.Forms.Button BotonEncendidoApagado;
+        private System.Windows.Forms.Button BtnRebobinar;
     }
 }
 

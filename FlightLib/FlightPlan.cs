@@ -128,6 +128,11 @@ namespace FlightLib
         {
             return this.velocidad != this.velocidadOriginal;
         }
+        
+        public bool TieneHistorial()
+        {
+            return historialPosiciones.Count > 0;
+        }
 
         // CÁLCULOS 
         public double Distancia(FlightPlan b)

@@ -36,6 +36,7 @@
             this.bttnExportarFlightPlan = new System.Windows.Forms.Button();
             this.BttnImportarOrdenador = new System.Windows.Forms.Button();
             this.BttnExportarOrdenador = new System.Windows.Forms.Button();
+            this.BtnExportarCambios = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // ImportarFlightPlan
@@ -62,7 +63,6 @@
             this.ImportarFlightPlanTextBox.Name = "ImportarFlightPlanTextBox";
             this.ImportarFlightPlanTextBox.Size = new System.Drawing.Size(115, 22);
             this.ImportarFlightPlanTextBox.TabIndex = 2;
-
             // 
             // ExportarFlightPlanTextBox
             // 
@@ -70,7 +70,6 @@
             this.ExportarFlightPlanTextBox.Name = "ExportarFlightPlanTextBox";
             this.ExportarFlightPlanTextBox.Size = new System.Drawing.Size(116, 22);
             this.ExportarFlightPlanTextBox.TabIndex = 3;
-
             // 
             // bttnImportarFlightPlan
             // 
@@ -112,11 +111,22 @@
             this.BttnExportarOrdenador.UseVisualStyleBackColor = true;
             this.BttnExportarOrdenador.Click += new System.EventHandler(this.BttnExportarOrdenador_Click);
             // 
+            // BtnExportarCambios
+            // 
+            this.BtnExportarCambios.Location = new System.Drawing.Point(199, 273);
+            this.BtnExportarCambios.Name = "BtnExportarCambios";
+            this.BtnExportarCambios.Size = new System.Drawing.Size(165, 23);
+            this.BtnExportarCambios.TabIndex = 9;
+            this.BtnExportarCambios.Text = "Exportar cambios";
+            this.BtnExportarCambios.UseVisualStyleBackColor = true;
+            this.BtnExportarCambios.Click += new System.EventHandler(this.BtnExportarCambios_Click);
+            // 
             // Importar__exportar_fichero
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(589, 315);
+            this.Controls.Add(this.BtnExportarCambios);
             this.Controls.Add(this.BttnExportarOrdenador);
             this.Controls.Add(this.BttnImportarOrdenador);
             this.Controls.Add(this.bttnExportarFlightPlan);
@@ -142,5 +152,6 @@
         private System.Windows.Forms.Button bttnExportarFlightPlan;
         private System.Windows.Forms.Button BttnImportarOrdenador;
         private System.Windows.Forms.Button BttnExportarOrdenador;
+        private System.Windows.Forms.Button BtnExportarCambios;
     }
 }

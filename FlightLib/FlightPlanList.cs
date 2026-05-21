@@ -139,6 +139,22 @@ namespace FlightLib
             return algunoSeMovio;
         }
 
+        public bool TieneHistorial()
+        {
+            int i = 0;
+            while (i < number)
+            {
+                // Usamos un método que debemos crear en FlightPlan
+                if (vector[i].TieneHistorial())
+                {
+                    return true;
+                }
+                i++;
+            }
+            return false;
+        }
+
+
         public void DeshacerTodos()
         {
             int i = 0;
@@ -158,6 +174,8 @@ namespace FlightLib
                 i++;
             }
         }
+
+
 
         public void EscribeConsola()
         {

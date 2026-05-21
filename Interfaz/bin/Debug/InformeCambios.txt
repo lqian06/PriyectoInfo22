@@ -1,0 +1,4 @@
+Emirates;support@emirates.com;+971-600-555555;Avion3;100;94
+iberiA;atencioncliente@iberia.com;+34-901-111-500;Avion4;100;65
+Vueling;serviciocliente@vueling.com;+34-931-220-857;Avion5;100;83
+United_Airlines;customer.care@united.com;+1-800-864-8331;Avion8;100;71

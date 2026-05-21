@@ -15,7 +15,7 @@ namespace Interfaz
         private int tiempoCiclo = 0;
         private int segundos = 0;
         private Grid ventanaGrid;
-
+        private bool rebobinando = false;
         public Menu()
         {
             InitializeComponent();
@@ -34,6 +34,8 @@ namespace Interfaz
             CambiarVelBtn.Visible = false;
             ChocaLabel.Visible = false;
             seguridad.Visible = false;
+            BtnRebobinar.Visible = false;
+
         }
 
         // CONFIGURACIÓN Y CARGA DE DATOS
@@ -135,6 +137,7 @@ namespace Interfaz
                 }
             }
 
+            rebobinando = false;
             timer1.Interval = 1000;
             timer1.Start();
 
@@ -151,34 +154,55 @@ namespace Interfaz
 
         private void Timer1_Tick(object sender, EventArgs e)
         {
-            segundos++;
-
-            // Refrescar indicadores del Form
-            if (planes.HabraConflictoLista(distanciaSeguridad))
-                ChocaLabel.Text = "Alerta: Conflicto Detectado";
-            else
-                ChocaLabel.Text = "Espacio Aéreo Seguro";
-
-            bool enMovimiento = false;
-            int i = 0;
-            while (i < planes.GetNum())
+            if (rebobinando)
             {
-                if (!planes.GetFlightPlan(i).HasArrived())
+                // LÓGICA DE REBOBINADO
+                if (planes.TieneHistorial())
                 {
-                    planes.GetFlightPlan(i).Mover(tiempoCiclo);
-                    enMovimiento = true;
+                    planes.DeshacerTodos();
+                    if (segundos > 0) segundos--; // Ajustamos el contador si lo usas
+                    panel1.Invalidate();
+                    ActualizarGridExterno();
                 }
-                i++;
-            }
-
-            if (enMovimiento)
-            {
-                panel1.Invalidate();
-                ActualizarGridExterno();
+                else
+                {
+                    rebobinando = false;
+                    timer1.Stop();
+                    MessageBox.Show("Se ha alcanzado el inicio de la simulación.");
+                }
             }
             else
             {
-                timer1.Stop();
+                // LÓGICA DE AVANCE NORMAL (Tu código original)
+                segundos++;
+
+                // Refrescar indicadores del Form
+                if (planes.HabraConflictoLista(distanciaSeguridad))
+                    ChocaLabel.Text = "Alerta: Conflicto Detectado";
+                else
+                    ChocaLabel.Text = "Espacio Aéreo Seguro";
+
+                bool enMovimiento = false;
+                int i = 0;
+                while (i < planes.GetNum())
+                {
+                    if (!planes.GetFlightPlan(i).HasArrived())
+                    {
+                        planes.GetFlightPlan(i).Mover(tiempoCiclo);
+                        enMovimiento = true;
+                    }
+                    i++;
+                }
+
+                if (enMovimiento)
+                {
+                    panel1.Invalidate();
+                    ActualizarGridExterno();
+                }
+                else
+                {
+                    timer1.Stop();
+                }
             }
         }
 
@@ -409,6 +433,7 @@ namespace Interfaz
                 CambiarVelBtn.Visible = true;
                 ChocaLabel.Visible = true;
                 seguridad.Visible = true;
+                BtnRebobinar.Visible = true;
 
                 BotonEncendidoApagado.BackColor = Color.LightGreen;
                 panel1.Invalidate();
@@ -419,6 +444,23 @@ namespace Interfaz
                 planes.ReiniciarTodos();
                 Menu_Load(sender, e);
                 BotonEncendidoApagado.BackColor = SystemColors.Control;
+            }   
+        }
+
+        private void BtnRebobinar_Click(object sender, EventArgs e)
+        {
+            if (rebobinando)
+            {
+                // Si ya estábamos rebobinando, paramos todo
+                rebobinando = false;
+                timer1.Stop();
+            }
+            else
+            {
+                // Si no, empezamos a rebobinar
+                rebobinando = true;
+                timer1.Interval = 200; // Velocidad rápida para rebobinar
+                timer1.Start();
             }
         }
     }
