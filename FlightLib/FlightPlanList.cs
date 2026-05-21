@@ -144,7 +144,6 @@ namespace FlightLib
             int i = 0;
             while (i < number)
             {
-                // Usamos un método que debemos crear en FlightPlan
                 if (vector[i].TieneHistorial())
                 {
                     return true;
@@ -174,8 +173,6 @@ namespace FlightLib
                 i++;
             }
         }
-
-
 
         public void EscribeConsola()
         {

@@ -156,11 +156,10 @@ namespace Interfaz
         {
             if (rebobinando)
             {
-                // LÓGICA DE REBOBINADO
                 if (planes.TieneHistorial())
                 {
                     planes.DeshacerTodos();
-                    if (segundos > 0) segundos--; // Ajustamos el contador si lo usas
+                    if (segundos > 0) segundos--;
                     panel1.Invalidate();
                     ActualizarGridExterno();
                 }
@@ -173,10 +172,8 @@ namespace Interfaz
             }
             else
             {
-                // LÓGICA DE AVANCE NORMAL (Tu código original)
                 segundos++;
 
-                // Refrescar indicadores del Form
                 if (planes.HabraConflictoLista(distanciaSeguridad))
                     ChocaLabel.Text = "Alerta: Conflicto Detectado";
                 else

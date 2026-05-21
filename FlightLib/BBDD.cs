@@ -90,7 +90,7 @@ namespace FlightLib
         // CONEXIÓN
         public void Iniciar()
         {
-            // Usamos "usuarios.db", pero al iniciar crearemos la tabla de compañías si no existe
+            
             string dataSource = "Data Source=usuarios.db";
             cnx = new SQLiteConnection(dataSource);
             cnx.Open();
@@ -204,19 +204,15 @@ namespace FlightLib
             }
         }
 
-        // Cambiamos la firma para recibir la lista de aviones
         public void GenerarInformeCambios(string ruta, FlightPlanList lista)
         {
-            // Ya no hacemos BBDD db = new BBDD(); porque ya estamos dentro de ella
 
-            // Obtenemos los aviones cambiados directamente de la lista que pasamos
             List<FlightPlan> cambiados = lista.GetAvionesConCambios();
 
             using (StreamWriter sw = new StreamWriter(ruta))
             {
                 foreach (FlightPlan fp in cambiados)
                 {
-                    // Usamos el método de esta misma clase para buscar la compañía
                     Compania c = this.GetCompaniaPorNombre(fp.GetCompany());
 
                     string correo = (c != null) ? c.GetCorreo() : "N/A";

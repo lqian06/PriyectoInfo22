@@ -4,34 +4,25 @@ using FlightLib;
 
 namespace Interfaz
 {
-    /// <summary>
-    /// Formulario encargado de mostrar y editar los datos de los vuelos en una cuadrícula.
-    /// </summary>
     public partial class Grid : Form
     {
-        // =================================================================
         // ATRIBUTOS E INSTANCIAS
-        // =================================================================
         private FlightPlanList listaVuelosInterna;
 
-        // =================================================================
         // CONSTRUCTOR
-        // =================================================================
         public Grid()
         {
             InitializeComponent();
         }
 
-        // =================================================================
-        // MÉTODOS PÚBLICOS (Control de Datos del Grid)
-        // =================================================================
+        // CONTROL GRID
 
         public void CargarDatos(FlightPlanList listaVuelos)
         {
             this.listaVuelosInterna = listaVuelos;
 
             GridDatosVuelos.ColumnCount = 7;
-            GridDatosVuelos.RowCount = listaVuelos.GetNum() + 1; // +1 para la fila de encabezados
+            GridDatosVuelos.RowCount = listaVuelos.GetNum() + 1; 
             GridDatosVuelos.ColumnHeadersVisible = false;
             GridDatosVuelos.RowHeadersVisible = false;
 
@@ -61,13 +52,10 @@ namespace Interfaz
             }
         }
 
-        // =================================================================
         // EVENTOS DEL CONTROL GRID (INTERFAZ)
-        // =================================================================
 
         private void GridDatosVuelos_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            // NOTA: Esta validación y cálculo matemático debería centralizarse en FlightLib
             if (listaVuelosInterna != null && listaVuelosInterna.GetNum() == 2)
             {
                 double distancia = listaVuelosInterna.GetFlightPlan(0).Distancia(listaVuelosInterna.GetFlightPlan(1));
@@ -81,7 +69,7 @@ namespace Interfaz
             {
                 try
                 {
-                    int indiceVuelo = e.RowIndex - 1; // Ajuste por la fila de encabezado
+                    int indiceVuelo = e.RowIndex - 1; 
                     double nuevaVelocidad = Convert.ToDouble(GridDatosVuelos[e.ColumnIndex, e.RowIndex].Value);
 
                     FlightPlan planModificado = listaVuelosInterna.GetFlightPlan(indiceVuelo);
@@ -95,11 +83,6 @@ namespace Interfaz
                 }
             }
         }
-
-        // =================================================================
-        // MÉTODOS PRIVADOS (Auxiliares de Renderizado)
-        // =================================================================
-
         private void ConfigurarEncabezados()
         {
             GridDatosVuelos[0, 0].Value = "";
