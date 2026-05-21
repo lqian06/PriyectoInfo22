@@ -114,7 +114,7 @@ namespace FlightLib
             }
         }
 
-        public bool HasArrived()
+        public bool HasArrived() //
         {
             bool resultado = false;
             if ((Math.Abs(currentPosition.GetX() - initialPosition.GetX()) >= Math.Abs(finalPosition.GetX() - initialPosition.GetX())) &&
