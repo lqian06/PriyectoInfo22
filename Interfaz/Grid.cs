@@ -1,42 +1,107 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using FlightLib;
 
 namespace Interfaz
 {
-    public partial class Grid : Form // Formulario para mostrar los datos de los vuelos
+    /// <summary>
+    /// Formulario encargado de mostrar y editar los datos de los vuelos en una cuadrícula.
+    /// </summary>
+    public partial class Grid : Form
     {
-        FlightPlanList ListaVuelosInterna;
-        public Grid() // Constructor del formulario
+        // =================================================================
+        // ATRIBUTOS E INSTANCIAS
+        // =================================================================
+        private FlightPlanList listaVuelosInterna;
+
+        // =================================================================
+        // CONSTRUCTOR
+        // =================================================================
+        public Grid()
         {
             InitializeComponent();
         }
-        private void GridDatosVuelos_CellClick(object sender, DataGridViewCellEventArgs e) // Evento al hacer clic en una celda
+
+        // =================================================================
+        // MÉTODOS PÚBLICOS (Control de Datos del Grid)
+        // =================================================================
+
+        public void CargarDatos(FlightPlanList listaVuelos)
         {
-            // Verificamos que la lista no sea nula y tenga al menos 2 vuelos
-            if (ListaVuelosInterna.GetNum() == 2)
+            this.listaVuelosInterna = listaVuelos;
+
+            GridDatosVuelos.ColumnCount = 7;
+            GridDatosVuelos.RowCount = listaVuelos.GetNum() + 1; // +1 para la fila de encabezados
+            GridDatosVuelos.ColumnHeadersVisible = false;
+            GridDatosVuelos.RowHeadersVisible = false;
+
+            ConfigurarEncabezados();
+
+            // Rellenar datos de cada vuelo
+            int i = 0;
+            while (i < listaVuelos.GetNum())
             {
-                double distancia = ListaVuelosInterna.GetFlightPlan(0).Distancia(ListaVuelosInterna.GetFlightPlan(1));
+                FlightPlan v = listaVuelos.GetFlightPlan(i);
+                PintarFilaVuelo(v, i + 1);
+                i++;
+            }
+        }
+
+        public void ActualizarValores(FlightPlanList listaVuelos)
+        {
+            this.listaVuelosInterna = listaVuelos;
+            if (listaVuelos.GetNum() < 1) return;
+
+            int i = 0;
+            while (i < listaVuelos.GetNum())
+            {
+                FlightPlan v = listaVuelos.GetFlightPlan(i);
+                PintarFilaVuelo(v, i + 1);
+                i++;
+            }
+        }
+
+        // =================================================================
+        // EVENTOS DEL CONTROL GRID (INTERFAZ)
+        // =================================================================
+
+        private void GridDatosVuelos_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            // NOTA: Esta validación y cálculo matemático debería centralizarse en FlightLib
+            if (listaVuelosInterna != null && listaVuelosInterna.GetNum() == 2)
+            {
+                double distancia = listaVuelosInterna.GetFlightPlan(0).Distancia(listaVuelosInterna.GetFlightPlan(1));
                 MessageBox.Show("La distancia entre los vuelos es: " + Math.Round(distancia, 2) + " metros.");
             }
         }
 
-        public void CargarDatos(FlightPlanList ListaVuelos) // Método para cargar los datos de los vuelos en el grid
+        private void GridDatosVuelos_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
-            this.ListaVuelosInterna = ListaVuelos;
-            GridDatosVuelos.ColumnCount = 7;
-            GridDatosVuelos.RowCount = ListaVuelos.GetNum() + 1; // +1 para los encabezados
-            GridDatosVuelos.ColumnHeadersVisible = false;
-            GridDatosVuelos.RowHeadersVisible = false;
+            if (listaVuelosInterna.GetNum() > 2 && e.ColumnIndex == 6 && e.RowIndex > 0)
+            {
+                try
+                {
+                    int indiceVuelo = e.RowIndex - 1; // Ajuste por la fila de encabezado
+                    double nuevaVelocidad = Convert.ToDouble(GridDatosVuelos[e.ColumnIndex, e.RowIndex].Value);
 
-            // Encabezados
+                    FlightPlan planModificado = listaVuelosInterna.GetFlightPlan(indiceVuelo);
+                    planModificado.SetVelocidad(nuevaVelocidad);
+
+                    MessageBox.Show($"Velocidad del vuelo {planModificado.GetID()} cambiada a {nuevaVelocidad} km/h correctamente.");
+                }
+                catch (FormatException)
+                {
+                    MessageBox.Show("Introduce un número válido para la velocidad");
+                }
+            }
+        }
+
+        // =================================================================
+        // MÉTODOS PRIVADOS (Auxiliares de Renderizado)
+        // =================================================================
+
+        private void ConfigurarEncabezados()
+        {
             GridDatosVuelos[0, 0].Value = "";
             GridDatosVuelos[1, 0].Value = "ID";
             GridDatosVuelos[2, 0].Value = "Company";
@@ -44,63 +109,17 @@ namespace Interfaz
             GridDatosVuelos[4, 0].Value = "CurrentPosition";
             GridDatosVuelos[5, 0].Value = "FinalPosition";
             GridDatosVuelos[6, 0].Value = "Velocidad";
-
-            // Datos de cada vuelo
-            int i = 0;
-            while (i < ListaVuelos.GetNum())
-            {
-                var v = ListaVuelos.GetFlightPlan(i);
-                GridDatosVuelos[0, i + 1].Value = "Vuelo " + v.GetID();
-                GridDatosVuelos[1, i + 1].Value = v.GetID();
-                GridDatosVuelos[2, i + 1].Value = v.GetCompany();
-                GridDatosVuelos[3, i + 1].Value = v.GetInitialPosition().GetX() + "," + v.GetInitialPosition().GetY();
-                GridDatosVuelos[4, i + 1].Value = v.GetCurrentPosition().GetX() + "," + v.GetCurrentPosition().GetY();
-                GridDatosVuelos[5, i + 1].Value = v.GetFinalPosition().GetX() + "," + v.GetFinalPosition().GetY();
-                GridDatosVuelos[6, i + 1].Value = v.GetVelocidad();
-                i++;
-            }
         }
 
-        public void ActualizarValores(FlightPlanList ListaVuelos) // Método para actualizar los valores de los vuelos en el grid
+        private void PintarFilaVuelo(FlightPlan v, int filaIndex)
         {
-            this.ListaVuelosInterna = ListaVuelos;
-            if (ListaVuelos.GetNum() < 1) return;
-
-            int i = 0;
-            while (i < ListaVuelos.GetNum())
-            {
-                var v = ListaVuelos.GetFlightPlan(i);
-                GridDatosVuelos[1, i + 1].Value = v.GetID();
-                GridDatosVuelos[2, i + 1].Value = v.GetCompany();
-                GridDatosVuelos[3, i + 1].Value = v.GetInitialPosition().GetX() + "," + v.GetInitialPosition().GetY();
-                GridDatosVuelos[4, i + 1].Value = v.GetCurrentPosition().GetX() + "," + v.GetCurrentPosition().GetY();
-                GridDatosVuelos[5, i + 1].Value = v.GetFinalPosition().GetX() + "," + v.GetFinalPosition().GetY();
-                GridDatosVuelos[6, i + 1].Value = v.GetVelocidad();
-                i++;
-            }
-        }
-
-     
-
-        private void GridDatosVuelos_CellEndEdit(object sender, DataGridViewCellEventArgs e)
-        {
-            if (ListaVuelosInterna.GetNum() > 2)
-            {
-                if (e.ColumnIndex == 6 && e.RowIndex > 0)
-                {
-                    try
-                    {
-                        int indicevuelo = e.RowIndex - 1; // -1 por el encabezado
-                        double nuevaVelocidad = Convert.ToDouble(GridDatosVuelos[e.ColumnIndex, e.RowIndex].Value);
-                        ListaVuelosInterna.GetFlightPlan(indicevuelo).SetVelocidad(nuevaVelocidad);
-                        MessageBox.Show("Velocidad del vuelo " + ListaVuelosInterna.GetFlightPlan(indicevuelo).GetID() + " cambiada a " + nuevaVelocidad + " km/h correctamente.");
-                    }
-                    catch (FormatException)
-                    {
-                        MessageBox.Show("Introduce un número válido para la velocidad");
-                    }
-                }
-            }
+            GridDatosVuelos[0, filaIndex].Value = "Vuelo " + v.GetID();
+            GridDatosVuelos[1, filaIndex].Value = v.GetID();
+            GridDatosVuelos[2, filaIndex].Value = v.GetCompany();
+            GridDatosVuelos[3, filaIndex].Value = $"{v.GetInitialPosition().GetX()},{v.GetInitialPosition().GetY()}";
+            GridDatosVuelos[4, filaIndex].Value = $"{v.GetCurrentPosition().GetX()},{v.GetCurrentPosition().GetY()}";
+            GridDatosVuelos[5, filaIndex].Value = $"{v.GetFinalPosition().GetX()},{v.GetFinalPosition().GetY()}";
+            GridDatosVuelos[6, filaIndex].Value = v.GetVelocidad();
         }
     }
 }

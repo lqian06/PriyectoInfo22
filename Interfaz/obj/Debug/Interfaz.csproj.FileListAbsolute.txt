@@ -49,7 +49,6 @@ C:\Users\Favivito\source\repos\lqian06\PriyectoInfo22\Interfaz\bin\Debug\FlightL
 C:\Users\Favivito\source\repos\lqian06\PriyectoInfo22\Interfaz\bin\Debug\System.Data.SQLite.dll
 C:\Users\Favivito\source\repos\lqian06\PriyectoInfo22\Interfaz\bin\Debug\FlightLib.pdb
 C:\Users\Favivito\source\repos\lqian06\PriyectoInfo22\Interfaz\obj\Debug\Interfaz.csproj.AssemblyReference.cache
-C:\Users\Favivito\source\repos\lqian06\PriyectoInfo22\Interfaz\obj\Debug\Interfaz.CambiarVelocidadPregunta.resources
 C:\Users\Favivito\source\repos\lqian06\PriyectoInfo22\Interfaz\obj\Debug\Interfaz.ChangeVelocity.resources
 C:\Users\Favivito\source\repos\lqian06\PriyectoInfo22\Interfaz\obj\Debug\Interfaz.AñadirFlightPlan.resources
 C:\Users\Favivito\source\repos\lqian06\PriyectoInfo22\Interfaz\obj\Debug\Interfaz.DistanciaSeguridadCiclo.resources

@@ -23,11 +23,11 @@ namespace Interfaz
 
         //GetLista de FormLinea y así importamos los datos de los planes de vuelo
         FlightPlanList listaImportada = null;
+
         public FlightPlanList GetLista()
         {
             return listaImportada;
-        }
-
+        }   
 
         //Comprueba que se han cargado los datos
         private void bttnImportarFlightPlan_Click(object sender, EventArgs e)

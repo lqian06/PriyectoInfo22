@@ -50,12 +50,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CambiarVelocidadPregunta.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="CambiarVelocidadPregunta.Designer.cs">
-      <DependentUpon>CambiarVelocidadPregunta.cs</DependentUpon>
-    </Compile>
     <Compile Include="ChangeVelocity.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -100,9 +94,6 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="CambiarVelocidadPregunta.resx">
-      <DependentUpon>CambiarVelocidadPregunta.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="ChangeVelocity.resx">
       <DependentUpon>ChangeVelocity.cs</DependentUpon>
     </EmbeddedResource>

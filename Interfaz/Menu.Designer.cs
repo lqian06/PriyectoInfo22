@@ -76,21 +76,21 @@
             this.BttnDistanciaSeguridadCiclo.Name = "BttnDistanciaSeguridadCiclo";
             this.BttnDistanciaSeguridadCiclo.Size = new System.Drawing.Size(409, 26);
             this.BttnDistanciaSeguridadCiclo.Text = "Añadir distancia de seguridad y tiempo de ciclo";
-            this.BttnDistanciaSeguridadCiclo.Click += new System.EventHandler(this.BttnDistanciaSeguridadCiclo_Click);
+            this.BttnDistanciaSeguridadCiclo.Click += new System.EventHandler(this.BtnDistanciaSeguridadCiclo_Click);
             // 
             // BttnAñadirFlightPlan
             // 
             this.BttnAñadirFlightPlan.Name = "BttnAñadirFlightPlan";
             this.BttnAñadirFlightPlan.Size = new System.Drawing.Size(409, 26);
             this.BttnAñadirFlightPlan.Text = "Añadir FlightPlan";
-            this.BttnAñadirFlightPlan.Click += new System.EventHandler(this.BttnAñadirFlightPlan_Click);
+            this.BttnAñadirFlightPlan.Click += new System.EventHandler(this.BtnAnadirFlightPlan_Click);
             // 
             // ImportarFlightPlan
             // 
             this.ImportarFlightPlan.Name = "ImportarFlightPlan";
             this.ImportarFlightPlan.Size = new System.Drawing.Size(409, 26);
             this.ImportarFlightPlan.Text = "Importar FlightPlan";
-            this.ImportarFlightPlan.Click += new System.EventHandler(this.ImportarFlightPlan_Click);
+            this.ImportarFlightPlan.Click += new System.EventHandler(this.BtnImportarFlightPlan_Click);
             // 
             // BtnConflicto
             // 
@@ -112,7 +112,7 @@
             this.BttnRetroceder.TabIndex = 21;
             this.BttnRetroceder.Text = "◁";
             this.BttnRetroceder.UseVisualStyleBackColor = true;
-            this.BttnRetroceder.Click += new System.EventHandler(this.BttnRetroceder_Click);
+            this.BttnRetroceder.Click += new System.EventHandler(this.BtnRetroceder_Click);
             // 
             // RestartSimBtn
             // 
@@ -123,7 +123,7 @@
             this.RestartSimBtn.TabIndex = 19;
             this.RestartSimBtn.Text = "⟳";
             this.RestartSimBtn.UseVisualStyleBackColor = true;
-            this.RestartSimBtn.Click += new System.EventHandler(this.RestartSimBtn_Click);
+            this.RestartSimBtn.Click += new System.EventHandler(this.BtnRestartSim_Click);
             // 
             // CambiarVelBtn
             // 
@@ -134,7 +134,7 @@
             this.CambiarVelBtn.TabIndex = 18;
             this.CambiarVelBtn.Text = "⏲️";
             this.CambiarVelBtn.UseVisualStyleBackColor = true;
-            this.CambiarVelBtn.Click += new System.EventHandler(this.CambiarVelBtn_Click);
+            this.CambiarVelBtn.Click += new System.EventHandler(this.BtnCambiarVel_Click);
             // 
             // BtnInfoVuelos
             // 
@@ -153,7 +153,8 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1000, 500);
             this.panel1.TabIndex = 16;
-            this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
+            this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.Panel1_Paint);
+            this.panel1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Panel1_MouseClick);
             // 
             // BtnIniciar
             // 
@@ -164,7 +165,7 @@
             this.BtnIniciar.TabIndex = 13;
             this.BtnIniciar.Text = "▶︎";
             this.BtnIniciar.UseVisualStyleBackColor = true;
-            this.BtnIniciar.Click += new System.EventHandler(this.btnIniciar_Click);
+            this.BtnIniciar.Click += new System.EventHandler(this.BtnIniciar_Click);
             // 
             // BttnAñadirUnCiclo
             // 
@@ -175,7 +176,7 @@
             this.BttnAñadirUnCiclo.TabIndex = 14;
             this.BttnAñadirUnCiclo.Text = "▷";
             this.BttnAñadirUnCiclo.UseVisualStyleBackColor = true;
-            this.BttnAñadirUnCiclo.Click += new System.EventHandler(this.BttnAñadirUnCiclo_Click);
+            this.BttnAñadirUnCiclo.Click += new System.EventHandler(this.BtnAnadirUnCiclo_Click);
             // 
             // btnParar
             // 
@@ -186,11 +187,11 @@
             this.btnParar.TabIndex = 15;
             this.btnParar.Text = "||";
             this.btnParar.UseVisualStyleBackColor = true;
-            this.btnParar.Click += new System.EventHandler(this.btnParar_Click);
+            this.btnParar.Click += new System.EventHandler(this.BtnParar_Click);
             // 
             // timer1
             // 
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            this.timer1.Tick += new System.EventHandler(this.Timer1_Tick);
             // 
             // ChocaLabel
             // 

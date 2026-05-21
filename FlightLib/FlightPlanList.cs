@@ -1,83 +1,70 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 namespace FlightLib
 {
-    public class FlightPlanList 
+    public class FlightPlanList
     {
-        FlightPlan[] vector = new FlightPlan[100];
-        int number = 0;
+        // ATRIBUTOS
+        private FlightPlan[] vector = new FlightPlan[100];
+        private int number = 0;
+        private int tiempoCiclo = 0;
+        private int distanciaSeguridad = 0;
 
-        public FlightPlanList()
-        {
-            this.vector = new FlightPlan[100]; // Asignación correcta a la variable de la clase
-            this.number = 0;                   // Asignación correcta a la variable de la clase
-        }
-
-        public int AddFlightPlan(FlightPlan p) // método que añade un FlightPlan al vector
-        {
-            if (number == 100)
-            {
-                return -1;
-            }
-            else
-            {
-                vector[number] = p;
-                number++;
-                return 0;
-            }
-
-        }
-       
-        public int GetNum() // método que devuelve el número de elementos que hay en el vector
+        // SETTERS Y GETTERS
+        public int GetNum()
         {
             return number;
         }
 
-        public FlightPlan GetFlightPlan(int i) // método que devuelve el FlightPlan que hay en la posición i del vector
+        public FlightPlan GetFlightPlan(int i)
         {
             if (i < 0 || i >= number)
-            { return null; }
-
+            {
+                return null;
+            }
             else
             {
                 return vector[i];
             }
         }
 
-        public void Mover(double tiempo) // método que mueve todos los FlightPlan del vector
+        public int GetTiempoCiclo()
         {
-            int i = 0;
-            while (i < number)
-            {
-                vector[i].Mover(tiempo);
-                i++;
-            }
-
+            return this.tiempoCiclo;
         }
-        public void EscribeConsola()// método que escribe en consola todos los FlightPlan del vector
-        {
-            int i = 0;
-            while (i < number)
-            {
-                vector[i].EscribeConsola();
-                i++;
-            }
 
-        }
-      
-        public double DistanciasMinimas()   // Devuelve la distancia mínima en toda la lista
+        public void SetTiempoCiclo(int tiempoCiclo)
         {
+            this.tiempoCiclo = tiempoCiclo;
+        }
+
+        public int GetDistanciaSeguridad()
+        {
+            return this.distanciaSeguridad;
+        }
+
+        public void SetDistanciaSeguridad(int distanciaSeguridad)
+        {
+            this.distanciaSeguridad = distanciaSeguridad;
+        }
+
+        // CONSTRUCTOR
+        public FlightPlanList()
+        {
+            this.vector = new FlightPlan[100];
+            this.number = 0;
+        }
+
+        // COLISION Y DISTANCIAS
+        public double DistanciasMinimas()
+        {
+            if (number < 2) return 0.0;
+
             double minima = vector[0].DistanciaMinima(vector[1]);
             int i = 0;
             while (i < number)
             {
-                //Para no repetir pares, vector [0] con vector [1], [2], etc. Luego vector [1] con vector [2], [3], etc.
                 int j = i + 1;
                 while (j < number)
                 {
@@ -90,8 +77,8 @@ namespace FlightLib
             }
             return minima;
         }
-       
-        public bool HabraConflictoLista(int distSeguridad)  // Ve si habrá conflicto entre todos los FlightPlan de la lista, con el mismo bucle que el de DistanciasMinimas().
+
+        public bool HabraConflictoLista(int distSeguridad)
         {
             int i = 0;
             while (i < number)
@@ -108,11 +95,80 @@ namespace FlightLib
             return false;
         }
 
-        // Resuelve el conflicto actual reduciendo la velocidad del avión que genera la colisión inmediata
-        // Calcula la velocidad reduciéndola de forma iterativa y comprobando la seguridad futura de toda la lista
+        // SIMULACION
+        public int AddFlightPlan(FlightPlan p)
+        {
+            if (number == 100)
+            {
+                return -1;
+            }
+            else
+            {
+                vector[number] = p;
+                number++;
+                return 0;
+            }
+        }
+
+        public void Mover(double tiempo)
+        {
+            int i = 0;
+            while (i < number)
+            {
+                vector[i].Mover(tiempo);
+                i++;
+            }
+        }
+
+        public bool MoverAvionesEnCurso(int tiempoCiclo)
+        {
+            bool algunoSeMovio = false;
+            int i = 0;
+            while (i < number)
+            {
+                if (!vector[i].HasArrived())
+                {
+                    vector[i].Mover(tiempoCiclo);
+                    algunoSeMovio = true;
+                }
+                i++;
+            }
+            return algunoSeMovio;
+        }
+
+        public void DeshacerTodos()
+        {
+            int i = 0;
+            while (i < number)
+            {
+                vector[i].Deshacer();
+                i++;
+            }
+        }
+
+        public void ReiniciarTodos()
+        {
+            int i = 0;
+            while (i < number)
+            {
+                vector[i].Restart();
+                i++;
+            }
+        }
+
+        public void EscribeConsola()
+        {
+            int i = 0;
+            while (i < number)
+            {
+                vector[i].EscribeConsola();
+                i++;
+            }
+        }
+
+        // CONFLICTO Y SOLUCION
         public bool ResolverConflicto(int distanciaSegura, int velmin)
         {
-            // 1. Guardamos el respaldo de velocidades originales por si no hay solución matemática
             double[] velocidadesOriginales = new double[100];
             int i = 0;
             while (i < number)
@@ -121,38 +177,31 @@ namespace FlightLib
                 i++;
             }
 
-            // 2. Si no hay conflicto futuro desde el inicio, terminamos con éxito inmediatamente
             if (!HabraConflictoLista(distanciaSegura))
             {
                 return true;
             }
 
-            // 3. Sistema de resolución coordinada por rondas
             bool seModificoAlgo = true;
 
-            // Mientras persistan colisiones futuras en la lista y los aviones tengan margen de frenado...
             while (HabraConflictoLista(distanciaSegura) && seModificoAlgo)
             {
                 seModificoAlgo = false;
-                i = 1; // Empezamos desde el segundo avión para resolverlo en parejas de forma eficiente
+                i = 1;
 
                 while (i < number && HabraConflictoLista(distanciaSegura))
                 {
                     int j = 0;
                     while (j < i && HabraConflictoLista(distanciaSegura))
                     {
-                        // Si el par de aviones (i, j) tiene proyectado un conflicto en el futuro
                         if (vector[i].HabraConflicto(vector[j], distanciaSegura))
                         {
-                            // Frenamos progresivamente al avión 'i' de 1 en 1 unidad hasta que el conflicto con 'j' 
-                            // desaparezca o hasta alcanzar el límite de velocidad mínimo establecido
                             while (vector[i].HabraConflicto(vector[j], distanciaSegura) && vector[i].GetVelocidad() > velmin)
                             {
                                 vector[i].SetVelocidad(vector[i].GetVelocidad() - 1);
                                 seModificoAlgo = true;
                             }
 
-                            // Si frenar al avión 'i' no bastó porque llegó a 'velmin', intentamos frenar al avión 'j'
                             while (vector[i].HabraConflicto(vector[j], distanciaSegura) && vector[j].GetVelocidad() > velmin)
                             {
                                 vector[j].SetVelocidad(vector[j].GetVelocidad() - 1);
@@ -165,15 +214,12 @@ namespace FlightLib
                 }
             }
 
-            // 4. Verificación final del espacio aéreo empleando tu validador predictivo
             if (!HabraConflictoLista(distanciaSegura))
             {
-                // ¡Éxito! Las velocidades se descalonaron lo suficiente para que nunca se toquen en el futuro
                 return true;
             }
             else
             {
-                // Si fue matemáticamente imposible evitar el cruce, aplicamos rollback absoluto de seguridad
                 int jBackup = 0;
                 while (jBackup < number)
                 {
@@ -184,55 +230,56 @@ namespace FlightLib
             }
         }
 
-        // Añadimos estas dos propiedades al inicio de la clase FlightPlanList
-        public int TiempoCiclo { get; set; } = 0;
-        public int DistanciaSeguridad { get; set; } = 0;
-
+        // CARGAR Y GUARDAR ARCHIVOS
         public FlightPlanList CargarDesdeArchivo(string nombreArchivo)
         {
-            FlightPlanList lista = new FlightPlanList();
             try
             {
-                StreamReader r = new StreamReader(nombreArchivo);
-                string primeraLinea = r.ReadLine();
+                this.number = 0;
+                this.vector = new FlightPlan[100];
 
-                if (primeraLinea != null)
+                using (StreamReader r = new StreamReader(nombreArchivo))
                 {
-                    // Separamos por espacios la primera fila
-                    string[] config = primeraLinea.Split(' ');
-                    if (config.Length >= 2)
+                    string primeraLinea = r.ReadLine();
+
+                    if (primeraLinea != null)
                     {
-                        lista.TiempoCiclo = Convert.ToInt32(config[0]);
-                        lista.DistanciaSeguridad = Convert.ToInt32(config[1]);
+                        string[] config = primeraLinea.Split(' ');
+                        if (config.Length >= 2)
+                        {
+                            this.SetTiempoCiclo(Convert.ToInt32(config[0]));
+                            this.SetDistanciaSeguridad(Convert.ToInt32(config[1]));
+                        }
                     }
-                }
 
-                // Ahora seguimos leyendo los planes de vuelo de las siguientes líneas
-                string linea = r.ReadLine();
-                while (linea != null && lista.GetNum() < 100)
-                {
-                    // Omitir líneas vacías por si acaso
-                    if (string.IsNullOrWhiteSpace(linea))
+                    string linea = r.ReadLine();
+                    while (linea != null && this.number < 100)
                     {
+                        if (string.IsNullOrWhiteSpace(linea))
+                        {
+                            linea = r.ReadLine();
+                            continue;
+                        }
+
+                        string[] datos = linea.Split(' ');
+
+                        if (datos.Length >= 7)
+                        {
+                            FlightPlan f = new FlightPlan(
+                                datos[0],
+                                datos[1],
+                                Convert.ToDouble(datos[2]),
+                                Convert.ToDouble(datos[3]),
+                                Convert.ToDouble(datos[4]),
+                                Convert.ToDouble(datos[5]),
+                                Convert.ToDouble(datos[6])
+                            );
+                            this.AddFlightPlan(f);
+                        }
                         linea = r.ReadLine();
-                        continue;
                     }
-
-                    string[] datos = linea.Split(' ');
-
-                    if (datos.Length >= 7)
-                    {
-                        FlightPlan f = new FlightPlan(datos[0], datos[1], Convert.ToDouble(datos[2]), Convert.ToDouble(datos[3]), Convert.ToDouble(datos[4]), Convert.ToDouble(datos[5]), Convert.ToDouble(datos[6]));
-                        lista.AddFlightPlan(f);
-                    }
-                    linea = r.ReadLine();
                 }
-                r.Close();
-                return lista;
-            }
-            catch (FileNotFoundException)
-            {
-                return null;
+                return this;
             }
             catch (Exception)
             {
@@ -240,43 +287,19 @@ namespace FlightLib
             }
         }
 
-        // Modificamos para aceptar los parámetros de configuración al guardar
         public void GuardarEnArchivo(string nombreArchivo, int tiempoCiclo, int distanciaSeguridad)
         {
-            StreamWriter write = new StreamWriter(nombreArchivo);
-
-            // Escribimos la primera fila de configuración
-            write.WriteLine(tiempoCiclo + " " + distanciaSeguridad);
-
-            // Escribimos los vuelos
-            int i = 0;
-            while (i < number)
+            using (StreamWriter write = new StreamWriter(nombreArchivo))
             {
-                write.WriteLine(vector[i].Escribirlinea());
-                i++;
-            }
-            write.Close();
-        }
+                write.WriteLine(tiempoCiclo + " " + distanciaSeguridad);
 
-        public void DeshacerTodos() // método que deshace el último movimiento de todos los FlightPlan de la lista
-        {
-            int i = 0;
-            while (i < number)
-            {
-                vector[i].Deshacer();
-                i++;
-            }
-        }
-
-        public void ReiniciarTodos() // método que reinicia la posición y limpia el stack de todos los FlightPlan de la lista
-        {
-            int i = 0;
-            while (i < number)
-            {
-                vector[i].Restart();
-                i++;
+                int i = 0;
+                while (i < number)
+                {
+                    write.WriteLine(vector[i].Escribirlinea());
+                    i++;
+                }
             }
         }
     }
 }
-
