@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SQLite;
 using System.IO;
 
 namespace FlightLib
@@ -301,5 +304,23 @@ namespace FlightLib
                 }
             }
         }
+
+        public List<FlightPlan> GetAvionesConCambios()
+        {
+            List<FlightPlan> afectados = new List<FlightPlan>();
+            int i = 0;
+            while (i < number)
+            {
+                if (vector[i].HaCambiadoVelocidad())
+                {
+                    afectados.Add(vector[i]);
+                }
+                i++;
+            }
+            return afectados;
+        }
+
+ 
     }
+    
 }

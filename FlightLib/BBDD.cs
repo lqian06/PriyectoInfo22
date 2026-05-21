@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SQLite;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Data.SQLite;
+using FlightLib;
 
 namespace FlightLib
 {
-    //Definir clase Usuario con propiedades Nombre y Contraseña, con sus respectivos métodos Get y Set
+    // USUARIO
     public class Usuario
     {
         private string nombre;
@@ -19,9 +21,9 @@ namespace FlightLib
             return this.nombre;
         }
 
-        public void SetNombre(string valor)
+        public void SetNombre(string nombreusuario)
         {
-            this.nombre = valor;
+            this.nombre = nombreusuario;
         }
 
         public string GetContrasena()
@@ -29,32 +31,81 @@ namespace FlightLib
             return this.contrasena;
         }
 
-        public void SetContrasena(string valor)
+        public void SetContrasena(string contrasenausuario)
         {
-            this.contrasena = valor;
+            this.contrasena = contrasenausuario;
         }
     }
 
-    //Definir clase BBDD
+    // COMPAÑÍA 
+    public class Compania
+    {
+        private string nombre;
+        private string telefono;
+        private string correo;
+
+        public string GetNombre()
+        {
+            return this.nombre;
+        }
+
+        public void SetNombre(string nombrecompania)
+        {
+            this.nombre = nombrecompania;
+        }
+
+        public string GetTelefono()
+        {
+            return this.telefono;
+        }
+
+        public void SetTelefono(string telefonocompania)
+        {
+            this.telefono = telefonocompania;
+        }
+
+        public string GetCorreo()
+        {
+            return this.correo;
+        }
+
+        public void SetCorreo(string correocompania)
+        {
+            this.correo = correocompania;
+        }
+
+        public Compania(string nombre, string telefono, string correo)
+        {
+            this.nombre = nombre;
+            this.telefono = telefono;
+            this.correo = correo;
+        }
+    }
+
+    // BASE DE DATOS
     public class BBDD
     {
-        SQLiteConnection cnx; // Variable de conexión a la base de datos
-        
-        // Método para iniciar la conexión a la base de datos
-        public void Iniciar() 
+        private SQLiteConnection cnx; // Variable de conexión a la base de datos
+
+        // CONEXIÓN
+        public void Iniciar()
         {
+            // Usamos "usuarios.db", pero al iniciar crearemos la tabla de compañías si no existe
             string dataSource = "Data Source=usuarios.db";
             cnx = new SQLiteConnection(dataSource);
             cnx.Open();
+
         }
 
-        // Método para cerrar la conexión a la base de datos
         public void Cerrar()
         {
-            cnx.Close();
+            if (cnx != null && cnx.State == ConnectionState.Open)
+            {
+                cnx.Close();
+            }
         }
 
-        // Método para obtener todos los clientes de la base de datos
+        // GESTIÓN DE USUARIOS
         public DataTable GetClientes()
         {
             DataTable dt = new DataTable();
@@ -64,29 +115,117 @@ namespace FlightLib
             return dt;
         }
 
-        // Método para validar si un usuario existe en la base de datos
         public bool ValidarUsuario(Usuario user)
         {
-            string sql = "SELECT COUNT(*) FROM clientes WHERE usuario = '" + user.GetNombre() + "' AND contraseña = '" + user.GetContrasena() + "'";
+            string sql = "SELECT COUNT(*) FROM clientes WHERE usuario = @usuario AND contraseña = @contrasena";
 
             SQLiteCommand cmd = new SQLiteCommand(sql, this.cnx);
+            cmd.Parameters.AddWithValue("@usuario", user.GetNombre());
+            cmd.Parameters.AddWithValue("@contrasena", user.GetContrasena());
 
             object result = cmd.ExecuteScalar();
-
             int count = Convert.ToInt32(result);
             return count > 0;
         }
 
-        // Método para guardar un nuevo usuario en la base de datos
         public void GuardarUsuario(Usuario user)
         {
-            string nombre = user.GetNombre();
-            string contrasena = user.GetContrasena();
+            string sql = "INSERT INTO clientes (usuario, contraseña) VALUES (@usuario, @contrasena)";
 
-            string sql = "INSERT INTO clientes (usuario, contraseña) VALUES ('" + user.GetNombre() + "', '" + user.GetContrasena() + "')";
-                
             SQLiteCommand cmd = new SQLiteCommand(sql, this.cnx);
+            cmd.Parameters.AddWithValue("@usuario", user.GetNombre());
+            cmd.Parameters.AddWithValue("@contrasena", user.GetContrasena());
+
             cmd.ExecuteNonQuery();
         }
+
+        // GESTIÓN DE COMPAÑÍAS
+        
+        public List<Compania> ObtenerTodasLasCompanias()
+        {
+            List<Compania> lista = new List<Compania>();
+            string sql = "SELECT * FROM companias";
+
+            using (SQLiteCommand cmd = new SQLiteCommand(sql, this.cnx))
+            using (SQLiteDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    lista.Add(new Compania(
+                        reader["nombre"].ToString(),
+                        reader["telefono"].ToString(),
+                        reader["correo"].ToString()
+                    ));
+                }
+            }
+            return lista;
+        }
+
+        public Compania GetCompaniaPorNombre(string nombre)
+        {
+            string sql = "SELECT * FROM companias WHERE nombre = @nombre";
+            using (SQLiteCommand cmd = new SQLiteCommand(sql, this.cnx))
+            {
+                cmd.Parameters.AddWithValue("@nombre", nombre);
+                using (SQLiteDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        return new Compania(
+                            reader["nombre"].ToString(),
+                            reader["telefono"].ToString(),
+                            reader["correo"].ToString()
+                        );
+                    }
+                }
+            }
+            return null; // Si no existe
+        }
+
+        public void GuardarCompania(Compania comp)
+        {
+            string sql = "INSERT OR REPLACE INTO companias (nombre, telefono, correo) VALUES (@nombre, @telefono, @correo)";
+            using (SQLiteCommand cmd = new SQLiteCommand(sql, this.cnx))
+            {
+                cmd.Parameters.AddWithValue("@nombre", comp.GetNombre());
+                cmd.Parameters.AddWithValue("@telefono", comp.GetTelefono());
+                cmd.Parameters.AddWithValue("@correo", comp.GetCorreo());
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public void EliminarCompania(string nombreCompania)
+        {
+            string sql = "DELETE FROM companias WHERE nombre = @nombre";
+            using (SQLiteCommand cmd = new SQLiteCommand(sql, this.cnx))
+            {
+                cmd.Parameters.AddWithValue("@nombre", nombreCompania);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        // Cambiamos la firma para recibir la lista de aviones
+        public void GenerarInformeCambios(string ruta, FlightPlanList lista)
+        {
+            // Ya no hacemos BBDD db = new BBDD(); porque ya estamos dentro de ella
+
+            // Obtenemos los aviones cambiados directamente de la lista que pasamos
+            List<FlightPlan> cambiados = lista.GetAvionesConCambios();
+
+            using (StreamWriter sw = new StreamWriter(ruta))
+            {
+                foreach (FlightPlan fp in cambiados)
+                {
+                    // Usamos el método de esta misma clase para buscar la compañía
+                    Compania c = this.GetCompaniaPorNombre(fp.GetCompany());
+
+                    string correo = (c != null) ? c.GetCorreo() : "N/A";
+                    string telefono = (c != null) ? c.GetTelefono() : "N/A";
+
+                    sw.WriteLine($"{fp.GetCompany()};{correo};{telefono};{fp.GetID()};{fp.GetVelocidadOriginal()};{fp.GetVelocidad()}");
+                }
+            }
+        }
+
     }
 }

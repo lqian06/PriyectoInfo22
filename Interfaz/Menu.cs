@@ -308,8 +308,32 @@ namespace Interfaz
                 if (distanciaAlClic < (radio + 5))
                 {
                     timer1.Stop();
-                    string estadoVuelo = Convert.ToString(fp.HasArrived());
-                    MessageBox.Show($"Detalles del vuelo:\r\nID: {fp.GetID()}\r\nCompañía: {fp.GetCompany()}\r\nVelocidad: {fp.GetVelocidad()}km/h\r\nPosición Actual: [{actual.GetX()},{actual.GetY()}]\r\nOrigen: [{fp.GetInitialPosition().GetX()},{fp.GetInitialPosition().GetY()}]\r\nDestino: [{fp.GetFinalPosition().GetX()},{fp.GetFinalPosition().GetY()}]\r\nEstado: {estadoVuelo}\r\nDistancia al destino: {actual.Distancia(fp.GetFinalPosition())}");
+
+                    BBDD db = new BBDD();
+                    db.Iniciar();
+
+                    // Buscamos la compañía
+                    Compania infoCompania = db.GetCompaniaPorNombre(fp.GetCompany());
+                    db.Cerrar();
+
+                    string contacto = "\r\n(Información de contacto no encontrada en BBDD)";
+                    if (infoCompania != null)
+                    {
+                        contacto = $"\r\n--- Contacto Aerolínea ---\r\nTel: {infoCompania.GetTelefono()}\r\nEmail: {infoCompania.GetCorreo()}";
+                    }
+
+                    // Mostrar mensaje
+                    string estadoVuelo = fp.HasArrived() ? "Llegado" : "En vuelo";
+                    MessageBox.Show($"Detalles del vuelo:\r\n" +
+                                    $"ID: {fp.GetID()}\r\n" +
+                                    $"Compañía: {fp.GetCompany()}\r\n" +
+                                    $"Velocidad: {fp.GetVelocidad()} km/h\r\n" +
+                                    $"Distancia restante: {fp.GetCurrentPosition().Distancia(fp.GetFinalPosition()):F2} km" +
+                                    $"{contacto}");
+
+                    // Volver a activar si es necesario (o deja que el usuario reanude)
+                    // timer1.Start(); 
+                    break;
                 }
             }
         }

@@ -93,7 +93,34 @@ namespace Interfaz
             {
                 MessageBox.Show("El formato del archivo no es correcto");
             }
+
+            //fichero cambios
+            SaveFileDialog dialogo = new SaveFileDialog();
+            dialogo.Filter = "Archivos de texto (*.txt)|*.txt";
+            dialogo.Title = "Generar Informe de Cambios de Velocidad";
+            dialogo.FileName = "InformeCambios.txt";
+
+            if (dialogo.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    // 2. Usamos la BBDD para generar el archivo
+                    BBDD db = new BBDD();
+                    db.Iniciar();
+
+                    // Pasamos la ruta seleccionada y la lista de aviones que gestiona el formulario
+                    db.GenerarInformeCambios(dialogo.FileName, this.lista);
+
+                    db.Cerrar();
+                    MessageBox.Show("Informe generado con éxito con los contactos de las aerolíneas.");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error al generar el informe: " + ex.Message);
+                }
+            }
         }
+        
 
 
 

@@ -12,6 +12,7 @@ namespace FlightLib
         private Position currentPosition;
         private Position finalPosition;
         private double velocidad;
+        private double velocidadOriginal;
         private Stack<Position> historialPosiciones = new Stack<Position>();
 
         // CONSTRUCTOR
@@ -23,6 +24,7 @@ namespace FlightLib
             this.currentPosition = new Position(cpx, cpy);
             this.finalPosition = new Position(fpx, fpy);
             this.velocidad = velocidad;
+            this.velocidadOriginal = velocidad;
         }
 
         // GETTERS Y SETTERS 
@@ -81,6 +83,11 @@ namespace FlightLib
             this.velocidad = velocidad;
         }
 
+        public double GetVelocidadOriginal()
+        {
+            return this.velocidadOriginal;
+        }
+
         // mover aviones
         public void Mover(double tiempo)
         {
@@ -116,6 +123,10 @@ namespace FlightLib
                 resultado = true;
             }
             return resultado;
+        }
+        public bool HaCambiadoVelocidad()
+        {
+            return this.velocidad != this.velocidadOriginal;
         }
 
         // CÁLCULOS 
